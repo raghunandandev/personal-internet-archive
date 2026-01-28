@@ -174,6 +174,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const categorySelect = document.getElementById('categorySelect');
     const newCategoryInput = document.getElementById('newCategoryInput');
 
+    const noteInput = document.getElementById('noteInput');
+
     // 1. Check if user is logged in
     const { authToken } = await chrome.storage.local.get('authToken');
 
@@ -268,7 +270,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     title: tab.title,
                     textContent: pageText,
                     screenshot: screenshot,
-                    category: finalCategory
+                    category: finalCategory,
+                    notes: noteInput.value
                 })
             });
 

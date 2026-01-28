@@ -10,6 +10,7 @@ import { useContext } from 'react';
 import Login from './pages/Login';
 import LoginSuccess from './pages/LoginSuccess';
 import Dashboard from './pages/Dashboard';
+import PageDetails from './pages/PageDetails';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -29,6 +30,7 @@ function App() {
               <Dashboard />
             </PrivateRoute>
           } />
+          <Route path="/pages/:id" element={<PrivateRoute><PageDetails /></PrivateRoute>} />
           {/* Backend redirects here with ?token=... */}
           <Route path="/login" element={<LoginSuccess />} />
           <Route path="/" element={<Navigate to="/dashboard" />} />

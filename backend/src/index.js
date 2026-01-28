@@ -15,7 +15,7 @@ app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true
 }));
-app.use(express.json({ limit: '10mb' })); // Increased limit for screenshots
+app.use(express.json({ limit: '50mb' })); // Increased limit for screenshots
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan('dev')); // Logging
 app.use(passport.initialize());

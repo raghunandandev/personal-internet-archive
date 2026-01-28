@@ -5,7 +5,7 @@ const Page = require('../models/page.model');
 // @access  Private
 const savePage = async (req, res) => {
     try {
-        const { url, title, screenshot, textContent, htmlContent, category } = req.body;
+        const { url, title, screenshot, textContent, htmlContent, category, notes } = req.body;
 
         if (!url || !title) {
             return res.status(400).json({ message: 'URL and Title are required' });
@@ -20,7 +20,8 @@ const savePage = async (req, res) => {
             htmlContent,
             tags: [],
             notes: '',
-            category: category || 'General'
+            category: category || 'General',
+            notes: notes || ''
         });
 
         res.status(201).json(page);
@@ -79,6 +80,27 @@ const deletePage = async (req, res) => {
     }
 };
 
+const updatePage = async (req, res) => {
+    try {
+        const { title, notes, category } = req.body;
+
+        // Find page by ID and User (security check)
+        const page = await Page.findOne({ _id: req.params.id, userId: req.userId });
+
+        if (!page) return res.status(404).json({ message: 'Page not found' });
+
+        // Update fields
+        page.title = title || page.title;
+        page.notes = notes || page.notes;
+        page.category = category || page.category;
+
+        await page.save();
+        res.json(page);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+  };
+
 const getCategories = async (req, res) => {
     try {
         // MongoDB 'distinct' finds all unique values for this field
@@ -89,4 +111,14 @@ const getCategories = async (req, res) => {
     }
   };
 
-module.exports = { savePage, getPages, deletePage, getCategories };
+const getPageById = async (req, res) => {
+    try {
+        const page = await Page.findOne({ _id: req.params.id, userId: req.userId });
+        if (!page) return res.status(404).json({ message: 'Page not found' });
+        res.json(page);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+  };
+
+module.exports = { savePage, getPages, deletePage, getCategories, getPageById, updatePage };
