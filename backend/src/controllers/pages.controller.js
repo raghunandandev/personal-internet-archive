@@ -5,7 +5,7 @@ const Page = require('../models/page.model');
 // @access  Private
 const savePage = async (req, res) => {
     try {
-        const { url, title, screenshot, textContent, htmlContent } = req.body;
+        const { url, title, screenshot, textContent, htmlContent, category } = req.body;
 
         if (!url || !title) {
             return res.status(400).json({ message: 'URL and Title are required' });
@@ -19,7 +19,8 @@ const savePage = async (req, res) => {
             textContent,
             htmlContent,
             tags: [],
-            notes: ''
+            notes: '',
+            category: category || 'General'
         });
 
         res.status(201).json(page);
@@ -78,4 +79,14 @@ const deletePage = async (req, res) => {
     }
 };
 
-module.exports = { savePage, getPages, deletePage };
+const getCategories = async (req, res) => {
+    try {
+        // MongoDB 'distinct' finds all unique values for this field
+        const categories = await Page.distinct('category', { userId: req.userId });
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+  };
+
+module.exports = { savePage, getPages, deletePage, getCategories };

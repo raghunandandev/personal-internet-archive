@@ -55,6 +55,19 @@
     <h3>Internet Archive</h3>
 
     <div id="auth-view" class="hidden">
+        <div style="margin-bottom: 10px; text-align: left;">
+            <label style="font-size: 12px; font-weight: bold; color: #444;">Category:</label>
+        
+            <select id="categorySelect"
+                style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="General">General</option>
+                <option value="new">+ Create New Category</option>
+            </select>
+        
+            <input type="text" id="newCategoryInput" placeholder="Enter new category name..."
+                style="width: 93%; padding: 8px; margin-top: 5px; display: none; border: 1px solid #2563eb; border-radius: 4px;" /> 
+        </div>
+
         <button id="saveBtn">Save This Page</button>
         <button id="logoutBtn">Logout</button>
     </div>

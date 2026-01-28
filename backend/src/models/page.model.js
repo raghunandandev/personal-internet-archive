@@ -12,6 +12,7 @@ const PageSchema = new mongoose.Schema({
     screenshot: { type: String }, // Stored as Base64 data URI
     textContent: { type: String }, // Clean text for searching
     htmlContent: { type: String }, // Raw HTML (optional, can be large)
+    category: { type: String, default: 'General', index: true },
     tags: [{ type: String }],
     notes: { type: String },
     savedAt: { type: Date, default: Date.now }
@@ -21,6 +22,7 @@ const PageSchema = new mongoose.Schema({
 PageSchema.index({
     title: 'text',
     textContent: 'text',
+    category: 'text',
     notes: 'text',
     tags: 'text'
 });
