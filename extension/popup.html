@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            width: 300px;
+            padding: 15px;
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        #logoutBtn {
+            background: transparent;
+            color: #666;
+            font-weight: normal;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Internet Archive</h3>
+
+    <div id="auth-view" class="hidden">
+        <button id="saveBtn">Save This Page</button>
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div id="login-view" class="hidden">
+        <p>Please login to save pages.</p>
+        <button id="loginBtn">Login with Google</button>
+    </div>
+
+    <p id="status"></p>
+    <script src="popup.js"></script>
+</body>
+
+</html>
