@@ -570,27 +570,290 @@
 
 //----------------------------- FINAL VERSION with Details Page Navigation ----------------------------->>>>>>>>>>>>>>>>
 
+// import { useEffect, useState, useContext } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import api from '../api/axios';
+// import { AuthContext } from '../context/AuthContext';
+// import { FaTrash, FaExternalLinkAlt, FaSearch, FaCopy, FaFolder, FaArrowLeft, FaSpinner } from 'react-icons/fa';
+
+// const Dashboard = () => {
+//     const [pages, setPages] = useState([]);
+//     const [categories, setCategories] = useState([]);
+//     const [selectedCategory, setSelectedCategory] = useState(null);
+//     const [search, setSearch] = useState('');
+//     const [loading, setLoading] = useState(true); // <--- FIX 1: Loading State
+
+//     const { logout } = useContext(AuthContext);
+//     const navigate = useNavigate();
+
+//     // 1. Fetch Categories on Load
+//     const fetchCategories = async () => {
+//         try {
+//             const { data } = await api.get('/pages/categories');
+//             // Ensure unique categories
+//             const uniqueCats = [...new Set(data)];
+//             setCategories(uniqueCats.length > 0 ? uniqueCats : ['General']);
+//         } catch (err) {
+//             console.error("Failed to fetch categories");
+//         }
+//     };
+
+//     // 2. Fetch Pages (Filtered by Category if selected)
+//     const fetchPages = async () => {
+//         setLoading(true); // Start loading
+//         try {
+//             let url = `/pages?search=${search}`;
+//             const { data } = await api.get(url);
+
+//             if (selectedCategory) {
+//                 setPages(data.filter(p => p.category === selectedCategory));
+//             } else {
+//                 setPages(data); // <--- FIX 2: Critical Fix (Uncommented)
+//             }
+//         } catch (err) {
+//             console.error("Failed to fetch pages");
+//         } finally {
+//             setLoading(false); // Stop loading
+//         }
+//     };
+
+//     const handleLogout = () => {
+//         logout();
+//         navigate('/');
+//     };
+
+//     const handleDelete = async (e, id) => {
+//         e.stopPropagation(); // Stop card click event
+//         if (!confirm("Delete this page?")) return;
+
+//         // Optimistic UI Update (Remove immediately for speed)
+//         setPages(prev => prev.filter(p => p._id !== id));
+
+//         try {
+//             await api.delete(`/pages/${id}`);
+//         } catch (err) {
+//             alert("Failed to delete.");
+//             fetchPages(); // Revert if failed
+//         }
+//     };
+
+//     const handleCopy = (e, url) => {
+//         e.stopPropagation(); // Stop card click event
+//         navigator.clipboard.writeText(url);
+//         // You could add a toast notification here
+//     };
+
+//     useEffect(() => { fetchCategories(); }, []);
+//     useEffect(() => { fetchPages(); }, [search, selectedCategory]);
+
+//     const handleSearch = (e) => {
+//         setSearch(e.target.value);
+//         if (e.target.value) setSelectedCategory(null);
+//     };
+
+//     return (
+//         <div className="min-h-screen bg-gray-100 pb-10">
+//             {/* Header */}
+//             <nav className="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-20">
+//                 <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+//                     🗂️ Personal Archive
+//                 </h1>
+//                 <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-700 font-semibold px-3 py-1 border border-red-100 rounded transition-colors">
+//                     Logout
+//                 </button>
+//             </nav>
+
+//             <div className="max-w-7xl mx-auto p-6">
+//                 {/* Controls Bar */}
+//                 <div className="mb-8 flex flex-col md:flex-row gap-4">
+//                     {/* Back Button */}
+//                     {selectedCategory && (
+//                         <button
+//                             onClick={() => {
+//                                 setSelectedCategory(null);
+//                                 setSearch(''); // Optional: Clear search when going back
+//                             }}
+//                             className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
+//                         >
+//                             <FaArrowLeft /> Back to Folders
+//                         </button>
+//                     )}
+
+//                     {/* Search Input */}
+//                     <div className="relative flex-1">
+//                         <FaSearch className="absolute left-3 top-3.5 text-gray-400" />
+//                         <input
+//                             type="text"
+//                             placeholder="Search by title, content, or notes..."
+//                             className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm transition-all"
+//                             value={search}
+//                             onChange={handleSearch}
+//                         />
+//                     </div>
+//                 </div>
+
+//                 {/* --- CONTENT AREA --- */}
+
+//                 {/* 1. Loading State */}
+//                 {loading ? (
+//                     <div className="flex flex-col items-center justify-center mt-20">
+//                         <FaSpinner className="animate-spin text-4xl text-blue-500 mb-4" />
+//                         <p className="text-gray-500">Loading your archive...</p>
+//                     </div>
+//                 ) : (
+//                     <>
+//                         {/* 2. Folder View (Show if no search & no category selected) */}
+//                         {!selectedCategory && !search && (
+//                             <div>
+//                                 <h2 className="text-lg font-semibold text-gray-700 mb-4">Your Collections</h2>
+//                                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+//                                     {categories.map((cat) => (
+//                                         <div
+//                                             key={cat}
+//                                             onClick={() => setSelectedCategory(cat)}
+//                                             className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md cursor-pointer transition flex flex-col items-center justify-center border border-gray-200 group"
+//                                         >
+//                                             <FaFolder className="text-5xl text-blue-200 group-hover:text-blue-400 transition mb-3" />
+//                                             <h3 className="font-bold text-gray-700 text-center truncate w-full">{cat}</h3>
+//                                             <span className="text-xs text-gray-400 mt-1">Open Folder</span>
+//                                         </div>
+//                                     ))}
+//                                 </div>
+//                             </div>
+//                         )}
+
+//                         {/* 3. Page Grid View (Show if searching OR category selected) */}
+//                         {(selectedCategory || search) && (
+//                             <div className="animate-fade-in">
+//                                 <div className="flex justify-between items-center mb-6">
+//                                     <h2 className="text-2xl font-bold text-gray-800">
+//                                         {selectedCategory ? `📂 ${selectedCategory}` : `🔍 Search Results: "${search}"`}
+//                                     </h2>
+//                                 </div>
+
+//                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+//                                     {pages.map((page) => (
+//                                         <div
+//                                             key={page._id}
+//                                             onClick={() => navigate(`/pages/${page._id}`)}
+//                                             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer h-[320px]"
+//                                         >
+//                                             {/* Screenshot */}
+//                                             <div className="relative h-40 bg-gray-100 border-b border-gray-100">
+//                                                 {page.screenshot ? (
+//                                                     <img
+//                                                         src={page.screenshot}
+//                                                         alt={page.title}
+//                                                         className="w-full h-full object-cover object-top"
+//                                                         loading="lazy"
+//                                                     />
+//                                                 ) : (
+//                                                     <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+//                                                         <span className="text-4xl">📄</span>
+//                                                         <span className="text-xs mt-2">No Preview</span>
+//                                                     </div>
+//                                                 )}
+
+//                                                 <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wider font-semibold">
+//                                                     {page.category}
+//                                                 </span>
+//                                             </div>
+
+//                                             {/* Content */}
+//                                             <div className="p-4 flex-1 flex flex-col justify-between">
+//                                                 <div>
+//                                                     <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors" title={page.title}>
+//                                                         {page.title || "Untitled Page"}
+//                                                     </h3>
+//                                                     <p className="text-xs text-gray-400 mb-2">
+//                                                         Saved {new Date(page.savedAt).toLocaleDateString()}
+//                                                     </p>
+//                                                 </div>
+
+//                                                 <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
+//                                                     <div className="flex gap-2">
+//                                                         <a
+//                                                             href={page.url}
+//                                                             target="_blank"
+//                                                             rel="noreferrer"
+//                                                             onClick={(e) => e.stopPropagation()}
+//                                                             className="text-gray-500 hover:text-blue-600 p-1.5 hover:bg-blue-50 rounded transition"
+//                                                             title="Open Link"
+//                                                         >
+//                                                             <FaExternalLinkAlt size={14} />
+//                                                         </a>
+//                                                         <button
+//                                                             onClick={(e) => handleCopy(e, page.url)}
+//                                                             className="text-gray-500 hover:text-green-600 p-1.5 hover:bg-green-50 rounded transition"
+//                                                             title="Copy Link"
+//                                                         >
+//                                                             <FaCopy size={14} />
+//                                                         </button>
+//                                                     </div>
+//                                                     <button
+//                                                         onClick={(e) => handleDelete(e, page._id)}
+//                                                         className="text-gray-400 hover:text-red-500 p-1.5 hover:bg-red-50 rounded transition"
+//                                                         title="Delete"
+//                                                     >
+//                                                         <FaTrash size={14} />
+//                                                     </button>
+//                                                 </div>
+//                                             </div>
+//                                         </div>
+//                                     ))}
+//                                 </div>
+
+//                                 {/* Empty State (Only shows if NOT loading and NO pages) */}
+//                                 {pages.length === 0 && (
+//                                     <div className="flex flex-col items-center justify-center mt-20 text-gray-400">
+//                                         <FaFolder className="text-6xl mb-4 text-gray-200" />
+//                                         <p className="text-xl">No pages found.</p>
+//                                         <button
+//                                             onClick={() => { setSearch(''); setSelectedCategory(null) }}
+//                                             className="mt-4 text-blue-500 hover:underline font-medium"
+//                                         >
+//                                             Clear filters & View All
+//                                         </button>
+//                                     </div>
+//                                 )}
+//                             </div>
+//                         )}
+//                     </>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default Dashboard;
+
+
+//----------------------------- FINAL FINAL VERSION with mobile compatible ----------------------------->>>>>>>>>>>>>>>>
+
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
-import { FaTrash, FaExternalLinkAlt, FaSearch, FaCopy, FaFolder, FaArrowLeft, FaSpinner } from 'react-icons/fa';
+import { FaTrash, FaExternalLinkAlt, FaSearch, FaCopy, FaFolder, FaArrowLeft, FaSpinner, FaPlus, FaTimes } from 'react-icons/fa';
 
 const Dashboard = () => {
     const [pages, setPages] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [search, setSearch] = useState('');
-    const [loading, setLoading] = useState(true); // <--- FIX 1: Loading State
+    const [loading, setLoading] = useState(true);
+
+    // --- NEW: Modal State ---
+    const [showModal, setShowModal] = useState(false);
+    const [newPageData, setNewPageData] = useState({ url: '', title: '', category: 'General', notes: '' });
+    const [isSaving, setIsSaving] = useState(false);
 
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // 1. Fetch Categories on Load
     const fetchCategories = async () => {
         try {
             const { data } = await api.get('/pages/categories');
-            // Ensure unique categories
             const uniqueCats = [...new Set(data)];
             setCategories(uniqueCats.length > 0 ? uniqueCats : ['General']);
         } catch (err) {
@@ -598,22 +861,20 @@ const Dashboard = () => {
         }
     };
 
-    // 2. Fetch Pages (Filtered by Category if selected)
     const fetchPages = async () => {
-        setLoading(true); // Start loading
+        setLoading(true);
         try {
             let url = `/pages?search=${search}`;
             const { data } = await api.get(url);
-
             if (selectedCategory) {
                 setPages(data.filter(p => p.category === selectedCategory));
             } else {
-                setPages(data); // <--- FIX 2: Critical Fix (Uncommented)
+                setPages(data);
             }
         } catch (err) {
             console.error("Failed to fetch pages");
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
 
@@ -623,24 +884,41 @@ const Dashboard = () => {
     };
 
     const handleDelete = async (e, id) => {
-        e.stopPropagation(); // Stop card click event
+        e.stopPropagation();
         if (!confirm("Delete this page?")) return;
-
-        // Optimistic UI Update (Remove immediately for speed)
         setPages(prev => prev.filter(p => p._id !== id));
-
-        try {
-            await api.delete(`/pages/${id}`);
-        } catch (err) {
-            alert("Failed to delete.");
-            fetchPages(); // Revert if failed
-        }
+        try { await api.delete(`/pages/${id}`); } catch (err) { alert("Failed to delete."); fetchPages(); }
     };
 
     const handleCopy = (e, url) => {
-        e.stopPropagation(); // Stop card click event
+        e.stopPropagation();
         navigator.clipboard.writeText(url);
-        // You could add a toast notification here
+    };
+
+    // --- NEW: Handle Manual Save ---
+    const handleManualSave = async (e) => {
+        e.preventDefault();
+        setIsSaving(true);
+        try {
+            // Send data to backend (Screenshot will be null, that's okay)
+            const { data } = await api.post('/pages', {
+                ...newPageData,
+                screenshot: null, // No screenshot from mobile
+                textContent: "Manually saved via Dashboard"
+            });
+
+            // Add to UI immediately
+            setPages([data, ...pages]);
+
+            // Reset and Close
+            setShowModal(false);
+            setNewPageData({ url: '', title: '', category: 'General', notes: '' });
+            fetchCategories(); // Refresh categories in case a new one was added
+        } catch (err) {
+            alert("Failed to save page.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     useEffect(() => { fetchCategories(); }, []);
@@ -652,175 +930,166 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 pb-10">
-            {/* Header */}
+        <div className="min-h-screen bg-gray-100 pb-10 relative">
+            {/* Navbar */}
             <nav className="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-20">
                 <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    🗂️ Personal Archive
+                    🗂️ Archive
                 </h1>
-                <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-700 font-semibold px-3 py-1 border border-red-100 rounded transition-colors">
-                    Logout
-                </button>
+                <button onClick={handleLogout} className="text-sm text-red-500 font-semibold border border-red-100 px-3 py-1 rounded">Logout</button>
             </nav>
 
             <div className="max-w-7xl mx-auto p-6">
-                {/* Controls Bar */}
+                {/* Controls */}
                 <div className="mb-8 flex flex-col md:flex-row gap-4">
-                    {/* Back Button */}
                     {selectedCategory && (
-                        <button
-                            onClick={() => {
-                                setSelectedCategory(null);
-                                setSearch(''); // Optional: Clear search when going back
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                        >
-                            <FaArrowLeft /> Back to Folders
+                        <button onClick={() => { setSelectedCategory(null); setSearch(''); }} className="flex items-center gap-2 px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 text-gray-700">
+                            <FaArrowLeft /> Back
                         </button>
                     )}
-
-                    {/* Search Input */}
                     <div className="relative flex-1">
                         <FaSearch className="absolute left-3 top-3.5 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search by title, content, or notes..."
-                            className="w-full pl-10 p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm transition-all"
-                            value={search}
-                            onChange={handleSearch}
-                        />
+                        <input type="text" placeholder="Search..." className="w-full pl-10 p-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none" value={search} onChange={handleSearch} />
                     </div>
                 </div>
 
-                {/* --- CONTENT AREA --- */}
-
-                {/* 1. Loading State */}
+                {/* Content */}
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center mt-20">
-                        <FaSpinner className="animate-spin text-4xl text-blue-500 mb-4" />
-                        <p className="text-gray-500">Loading your archive...</p>
-                    </div>
+                    <div className="flex justify-center mt-20"><FaSpinner className="animate-spin text-4xl text-blue-500" /></div>
                 ) : (
                     <>
-                        {/* 2. Folder View (Show if no search & no category selected) */}
                         {!selectedCategory && !search && (
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-700 mb-4">Your Collections</h2>
-                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                                    {categories.map((cat) => (
-                                        <div
-                                            key={cat}
-                                            onClick={() => setSelectedCategory(cat)}
-                                            className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md cursor-pointer transition flex flex-col items-center justify-center border border-gray-200 group"
-                                        >
-                                            <FaFolder className="text-5xl text-blue-200 group-hover:text-blue-400 transition mb-3" />
-                                            <h3 className="font-bold text-gray-700 text-center truncate w-full">{cat}</h3>
-                                            <span className="text-xs text-gray-400 mt-1">Open Folder</span>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+                                {categories.map((cat) => (
+                                    <div key={cat} onClick={() => setSelectedCategory(cat)} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md cursor-pointer flex flex-col items-center justify-center border border-gray-200">
+                                        <FaFolder className="text-5xl text-blue-200 mb-3" />
+                                        <h3 className="font-bold text-gray-700 truncate w-full text-center">{cat}</h3>
+                                    </div>
+                                ))}
                             </div>
                         )}
 
-                        {/* 3. Page Grid View (Show if searching OR category selected) */}
                         {(selectedCategory || search) && (
-                            <div className="animate-fade-in">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-bold text-gray-800">
-                                        {selectedCategory ? `📂 ${selectedCategory}` : `🔍 Search Results: "${search}"`}
-                                    </h2>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                    {pages.map((page) => (
-                                        <div
-                                            key={page._id}
-                                            onClick={() => navigate(`/pages/${page._id}`)}
-                                            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group cursor-pointer h-[320px]"
-                                        >
-                                            {/* Screenshot */}
-                                            <div className="relative h-40 bg-gray-100 border-b border-gray-100">
-                                                {page.screenshot ? (
-                                                    <img
-                                                        src={page.screenshot}
-                                                        alt={page.title}
-                                                        className="w-full h-full object-cover object-top"
-                                                        loading="lazy"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
-                                                        <span className="text-4xl">📄</span>
-                                                        <span className="text-xs mt-2">No Preview</span>
-                                                    </div>
-                                                )}
-
-                                                <span className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wider font-semibold">
-                                                    {page.category}
-                                                </span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {pages.map((page) => (
+                                    <div key={page._id} onClick={() => navigate(`/pages/${page._id}`)} className="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-xl transition-all cursor-pointer h-[320px] flex flex-col">
+                                        <div className="relative h-40 bg-gray-100 border-b">
+                                            {page.screenshot ? (
+                                                <img src={page.screenshot} alt={page.title} className="w-full h-full object-cover object-top" />
+                                            ) : (
+                                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                                    <span className="text-4xl">🔗</span>
+                                                    <span className="text-xs mt-2">Link Only</span>
+                                                </div>
+                                            )}
+                                            <span className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded-full">{page.category}</span>
+                                        </div>
+                                        <div className="p-4 flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 line-clamp-2" title={page.title}>{page.title || page.url}</h3>
+                                                <p className="text-xs text-gray-400">Saved {new Date(page.savedAt).toLocaleDateString()}</p>
                                             </div>
-
-                                            {/* Content */}
-                                            <div className="p-4 flex-1 flex flex-col justify-between">
-                                                <div>
-                                                    <h3 className="font-bold text-gray-800 text-lg leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors" title={page.title}>
-                                                        {page.title || "Untitled Page"}
-                                                    </h3>
-                                                    <p className="text-xs text-gray-400 mb-2">
-                                                        Saved {new Date(page.savedAt).toLocaleDateString()}
-                                                    </p>
+                                            <div className="mt-auto pt-3 border-t flex justify-between">
+                                                <div className="flex gap-2">
+                                                    <a href={page.url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="text-gray-500 hover:text-blue-600 p-1.5"><FaExternalLinkAlt size={14} /></a>
+                                                    <button onClick={(e) => handleCopy(e, page.url)} className="text-gray-500 hover:text-green-600 p-1.5"><FaCopy size={14} /></button>
                                                 </div>
-
-                                                <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
-                                                    <div className="flex gap-2">
-                                                        <a
-                                                            href={page.url}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                            className="text-gray-500 hover:text-blue-600 p-1.5 hover:bg-blue-50 rounded transition"
-                                                            title="Open Link"
-                                                        >
-                                                            <FaExternalLinkAlt size={14} />
-                                                        </a>
-                                                        <button
-                                                            onClick={(e) => handleCopy(e, page.url)}
-                                                            className="text-gray-500 hover:text-green-600 p-1.5 hover:bg-green-50 rounded transition"
-                                                            title="Copy Link"
-                                                        >
-                                                            <FaCopy size={14} />
-                                                        </button>
-                                                    </div>
-                                                    <button
-                                                        onClick={(e) => handleDelete(e, page._id)}
-                                                        className="text-gray-400 hover:text-red-500 p-1.5 hover:bg-red-50 rounded transition"
-                                                        title="Delete"
-                                                    >
-                                                        <FaTrash size={14} />
-                                                    </button>
-                                                </div>
+                                                <button onClick={(e) => handleDelete(e, page._id)} className="text-gray-400 hover:text-red-500 p-1.5"><FaTrash size={14} /></button>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-
-                                {/* Empty State (Only shows if NOT loading and NO pages) */}
-                                {pages.length === 0 && (
-                                    <div className="flex flex-col items-center justify-center mt-20 text-gray-400">
-                                        <FaFolder className="text-6xl mb-4 text-gray-200" />
-                                        <p className="text-xl">No pages found.</p>
-                                        <button
-                                            onClick={() => { setSearch(''); setSelectedCategory(null) }}
-                                            className="mt-4 text-blue-500 hover:underline font-medium"
-                                        >
-                                            Clear filters & View All
-                                        </button>
                                     </div>
-                                )}
+                                ))}
+                            </div>
+                        )}
+
+                        {!selectedCategory && !search && pages.length > 0 && (
+                            <div className="text-center mt-10">
+                                <p className="text-gray-400">Select a folder above or use search to view pages.</p>
                             </div>
                         )}
                     </>
                 )}
             </div>
+
+            {/* --- FLOATING ACTION BUTTON (FAB) --- */}
+            <button
+                onClick={() => setShowModal(true)}
+                className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition-transform hover:scale-110 z-30"
+                title="Add Page Manually"
+            >
+                <FaPlus size={24} />
+            </button>
+
+            {/* --- ADD PAGE MODAL --- */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
+                        <div className="p-6 border-b flex justify-between items-center bg-gray-50">
+                            <h3 className="text-xl font-bold text-gray-800">Add Page Manually</h3>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <FaTimes size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleManualSave} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">URL</label>
+                                <input
+                                    required
+                                    type="url"
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="https://example.com"
+                                    value={newPageData.url}
+                                    onChange={(e) => setNewPageData({ ...newPageData, url: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                <input
+                                    required
+                                    type="text"
+                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="My awesome article"
+                                    value={newPageData.title}
+                                    onChange={(e) => setNewPageData({ ...newPageData, title: e.target.value })}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="General"
+                                        value={newPageData.category}
+                                        onChange={(e) => setNewPageData({ ...newPageData, category: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="Read later..."
+                                        value={newPageData.notes}
+                                        onChange={(e) => setNewPageData({ ...newPageData, notes: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isSaving}
+                                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-400 mt-2"
+                            >
+                                {isSaving ? 'Saving...' : 'Save Page'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
