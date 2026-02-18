@@ -46,7 +46,7 @@ const PageDetails = () => {
     };
 
     if (loading) return <div className="text-center mt-20">Loading...</div>;
-    if (!page) return <div className="text-center mt-20">Page not found.</div>;
+    if (!page) return <div className="text-center mt-20">Loading...</div>;
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">

@@ -424,7 +424,7 @@ const Dashboard = () => {
             if (selectedCategory) {
                 setPages(data.filter(p => p.category === selectedCategory));
             } else {
-                setPages(data);
+                //setPages(data);
             }
         } catch (err) {
             console.error("Failed to fetch pages");
@@ -453,7 +453,12 @@ const Dashboard = () => {
                     {/* Back Button (Only visible inside a category) */}
                     {selectedCategory && (
                         <button
-                            onClick={() => setSelectedCategory(null)}
+                            onClick={() => {
+                                setSelectedCategory(null);
+                                setPages([]);
+                            }
+                                 // Clear pages to show categories view
+                            } 
                             className="flex items-center gap-2 px-4 py-2 bg-white border rounded hover:bg-gray-50 text-gray-700"
                         >
                             <FaArrowLeft /> Back to Folders
@@ -547,7 +552,7 @@ const Dashboard = () => {
                                 </div>
                             ))}
                         </div>
-                        {pages.length === 0 && <p className="text-center text-gray-500 mt-10">No pages found.</p>}
+                        {pages.length === 0 && <p className="text-center text-gray-500 mt-10">Loading...</p>}
                     </div>
                 )}
             </div>

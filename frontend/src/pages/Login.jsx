@@ -3,7 +3,9 @@ import { FaGoogle } from 'react-icons/fa';
 const Login = () => {
     const handleGoogleLogin = () => {
         // Redirect browser to Backend Auth Endpoint
-        window.location.href = "http://localhost:5000/api/auth/google";
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        window.location.href = `${API_URL}/auth/google`;
+        //window.location.href = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth/google";
     };
 
     return (
