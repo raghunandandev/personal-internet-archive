@@ -160,8 +160,8 @@
 // });
 
 // Define the Base API URL (used for building other paths)
-const API_BASE = "http://localhost:5000/api";
-const DASHBOARD_URL = "http://localhost:5173/login";
+const API_BASE = "https://archive-backend-gi0k.onrender.com/api";
+const DASHBOARD_URL = "https://myarchive-nine.vercel.app/login";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const saveBtn = document.getElementById('saveBtn');
