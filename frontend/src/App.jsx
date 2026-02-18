@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import LoginSuccess from './pages/LoginSuccess';
 import Dashboard from './pages/Dashboard';
 import PageDetails from './pages/PageDetails';
+import Home from './pages/Home';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
@@ -23,6 +24,8 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Home Page */}
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-success" element={<LoginSuccess />} />
           <Route path="/dashboard" element={
