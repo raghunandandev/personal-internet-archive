@@ -1,8 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { FaBolt, FaSearch, FaImage, FaTags, FaShieldAlt, FaCloud } from 'react-icons/fa';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 const Home = () => {
     const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
+    useEffect(() => {
+        if (user) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans">

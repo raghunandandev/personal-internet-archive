@@ -431,6 +431,11 @@ const Dashboard = () => {
         }
     };
 
+    const handleLogout = () => {
+        logout();       // Clear the user state
+        navigate('/');  // Force redirect to Home Page
+    };
+
     useEffect(() => { fetchCategories(); }, []);
     useEffect(() => { fetchPages(); }, [search, selectedCategory]);
 
@@ -444,7 +449,7 @@ const Dashboard = () => {
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white shadow p-4 flex justify-between items-center sticky top-0 z-10">
                 <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">🗂️ Personal Archive</h1>
-                <button onClick={logout} className="text-sm text-red-500 hover:text-red-700 font-semibold px-3 py-1 border border-red-100 rounded">Logout</button>
+                <button onClick={handleLogout} className="text-sm text-red-500 hover:text-red-700 font-semibold px-3 py-1 border border-red-100 rounded">Logout</button>
             </nav>
 
             <div className="max-w-6xl mx-auto p-6">
