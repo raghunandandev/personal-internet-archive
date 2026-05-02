@@ -1,3 +1,4 @@
+<img width="1470" height="956" alt="Screenshot 2026-05-02 at 12 17 48 PM" src="https://github.com/user-attachments/assets/eba78d78-3cf2-43a6-a4cf-9e458ed56bbf" />
 # Personal Internet Archive
 
 A full-stack application that allows users to save, organize, and manage webpages in a personal digital archive. Built with React, Node.js/Express, MongoDB, and a Chrome/Brave extension.
