@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
             }
         } catch (err) {
-            console.error("Failed to load categories", err);
+            //console.error("Failed to load categories", err);
         }
     } else {
         // Show Login View if no token
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (err) {
             status.innerText = "Error: " + err.message;
-            console.error(err);
+            //console.error(err);
         } finally {
             saveBtn.disabled = false;
         }

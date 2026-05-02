@@ -60,11 +60,11 @@ const syncToken = () => {
     const token = urlParams.get("token");
 
     if (token) {
-        console.log("Archive Extension: Token found. Syncing...");
+        //console.log("Archive Extension: Token found. Syncing...");
 
         // 2. Save to secure Chrome Storage
         chrome.storage.local.set({ authToken: token }, () => {
-            console.log("Archive Extension: Token saved successfully.");
+            //console.log("Archive Extension: Token saved successfully.");
             showSuccessToast();
         });
     }

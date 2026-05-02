@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Personal Internet Archive",
-    "version": "1.0",
+    "version": "1.0.0",
     "description": "Save webpages to your personal archive.",
     "permissions": [
         "activeTab",
